@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, flash
 from flask_restful import Resource, reqparse
 from flask_paginate import Pagination, get_page_args
 from app import app, db
@@ -189,7 +189,10 @@ def home():
 @app.route('/add', methods=['POST'])
 def add():
     """An API to help users add their reviews and store it in the database"""
-
+    if 'username' not in session or not session['username']:
+        flash('Please log in first to add a review.')
+        return redirect('/login')
+    
     intializeDB()
     user = usersDb.find_one({"username": session['username']})
     if user == None:
